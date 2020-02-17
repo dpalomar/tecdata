@@ -4,43 +4,62 @@ import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 public class Solution {
-    public int[] solution2(int K, int M, int[] A){
+    public int[] solution(int K, int M, int[] A){
 
         int n = A.length;
 
         List<Integer> lista = new ArrayList<>();
-        List<Integer> numbers = IntStream.of(A)
-                .boxed()
-                .collect(Collectors.toList());
+        List<Integer> numbers = arrayToList(A);
 
         for (int i=0; i < A.length; i += K){
-            List<Integer> collect = Stream.of(
-                    Arrays.stream(Arrays.copyOfRange(numbers.toArray(), i, K + i))
-                            .filter(Objects::nonNull)
-                            .map(Integer.class::cast)
-                            .collect(Collectors.toList())
-
-            ).map((rango -> {
-                if (rango.size() == K) {
-                    rango.replaceAll(value -> value + 1);
-                }
-                return rango;
-            })).flatMap(x -> x.stream())
-                    .collect(Collectors.toList());
-            lista.addAll(collect);
-
+            lista.addAll(getRange(K, numbers, i));
         }
+//        final Set<Integer> plainOcurrences = getOcurrences(n, numbers);
+        final List<Integer> rangeOcurrences = getOcurrences(n, lista);
 
-        return lista.stream()
-                .filter(i -> Collections.frequency(lista, i) >= A.length / 2)
-                .collect(Collectors.toSet())
-                .stream()
-                .mapToInt(i -> i).toArray();
-
+        SortedSet<Integer> sortedSet = new TreeSet<>();
+//        sortedSet.addAll(plainOcurrences);
+        sortedSet.addAll(rangeOcurrences);
+        return sortedSet.stream().mapToInt(i -> i).toArray();
 
     }
 
-    public int[] solution(final int K, final int M, final int[] A) {
+    private List<Integer> getOcurrences(int size, List<Integer> lista) {
+        final List<Integer> collect = lista.stream()
+                .filter(i -> Collections.frequency(lista, i) >= size / 2)
+                .collect(Collectors.toList());
+        collect.replaceAll(value -> value - 1);
+        return collect;
+
+//        final Set<Integer> collect1 = collect.stream()
+//                .filter(i -> Collections.frequency(collect, i) > 1)
+//                .collect(Collectors.toSet());
+//        return collect1;
+    }
+
+    private List<Integer> arrayToList(int[] A) {
+        return IntStream.of(A)
+                .boxed()
+                .collect(Collectors.toList());
+    }
+
+    private List<Integer> getRange(int K, List<Integer> numbers, int i) {
+        return Stream.of(
+                        Arrays.stream(Arrays.copyOfRange(numbers.toArray(), i, K + i))
+                                .filter(Objects::nonNull)
+                                .map(Integer.class::cast)
+                                .collect(Collectors.toList())
+
+                ).map((rango -> {
+                    if (rango.size() == K) {
+                        rango.replaceAll(value -> value + 1);
+                    }
+                    return rango;
+                })).flatMap(x -> x.stream())
+                        .collect(Collectors.toList());
+    }
+
+    public int[] solution2(final int K, final int M, final int[] A) {
         final int size = A.length;
         final int enough = size/2 + 1;
 
