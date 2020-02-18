@@ -11,8 +11,19 @@ public class Solution {
         List<Integer> lista = new ArrayList<>();
         List<Integer> numbers = arrayToList(A);
 
+
+
         for (int i=0; i < A.length; i += K){
-            lista.addAll(getRange(K, numbers, i));
+
+            final List<Integer> rango = numbers.subList(i, K );
+            final List<Integer> rest = numbers.subList(K, numbers.size());
+            rango.replaceAll(value->value+1);
+            final ArrayList<Integer> temp = new ArrayList<>(rango);
+            temp.addAll(rest);
+
+//            lista.addAll(getRange(K, numbers, i));
+
+            final List<Integer> ocurrences = getOcurrences(n, temp);
         }
 //        final Set<Integer> plainOcurrences = getOcurrences(n, numbers);
         final List<Integer> rangeOcurrences = getOcurrences(n, lista);
@@ -28,7 +39,7 @@ public class Solution {
         final List<Integer> collect = lista.stream()
                 .filter(i -> Collections.frequency(lista, i) >= size / 2)
                 .collect(Collectors.toList());
-        collect.replaceAll(value -> value - 1);
+//        collect.replaceAll(value -> value - 1);
         return collect;
 
 //        final Set<Integer> collect1 = collect.stream()
